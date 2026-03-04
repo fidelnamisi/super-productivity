@@ -17,7 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, take } from 'rxjs/operators';
 import { Metric, MetricCopy } from '../metric.model';
 import { MetricService } from '../metric.service';
@@ -70,9 +70,13 @@ export class ReflectionNoteComponent {
     () => this.dayStr() ?? this._globalTrackingIntervalService.todayDateStr(),
   );
 
-  private readonly _day$ = toObservable(this._resolvedDay).pipe(distinctUntilChanged());
+  private readonly _day$: Observable<string> = toObservable(this._resolvedDay).pipe(
+    distinctUntilChanged(),
+  );
   private readonly _metricForDay = toSignal(
-    this._day$.pipe(switchMap((day) => this._metricService.getMetricForDay$(day))),
+    this._day$.pipe(
+      switchMap((day: string) => this._metricService.getMetricForDay$(day)),
+    ),
     { initialValue: { id: '', ...DEFAULT_METRIC_FOR_DAY } as MetricCopy },
   );
 
@@ -87,11 +91,14 @@ export class ReflectionNoteComponent {
   private _lastUserInput = '';
 
   constructor() {
-    this._reflectionChanges$
-      .pipe(debounceTime(500), takeUntilDestroyed())
-      .subscribe((value) => {
-        this._persistReflection(value);
-      });
+    (
+      this._reflectionChanges$.pipe(
+        debounceTime(500),
+        takeUntilDestroyed(),
+      ) as Observable<string>
+    ).subscribe((value: string) => {
+      this._persistReflection(value);
+    });
 
     this._translate.onLangChange
       .pipe(takeUntilDestroyed())

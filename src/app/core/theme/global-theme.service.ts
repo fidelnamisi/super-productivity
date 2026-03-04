@@ -234,12 +234,16 @@ export class GlobalThemeService {
 
   private _initThemeWatchers(): void {
     // init theme watchers
-    this._workContextService.currentTheme$
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((theme: WorkContextThemeCfg) => this._setColorTheme(theme));
-    this._isDarkThemeObs$
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((isDarkTheme) => this._setDarkTheme(isDarkTheme));
+    (
+      this._workContextService.currentTheme$.pipe(
+        takeUntilDestroyed(this._destroyRef),
+      ) as Observable<WorkContextThemeCfg>
+    ).subscribe((theme: WorkContextThemeCfg) => this._setColorTheme(theme));
+    (
+      this._isDarkThemeObs$.pipe(
+        takeUntilDestroyed(this._destroyRef),
+      ) as Observable<boolean>
+    ).subscribe((isDarkTheme: boolean) => this._setDarkTheme(isDarkTheme));
 
     // Update Electron title bar overlay when dark mode changes
     if (IS_ELECTRON && !IS_MAC) {

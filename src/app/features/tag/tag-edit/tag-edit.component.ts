@@ -95,7 +95,7 @@ export class TagEditComponent {
   constructor() {
     this.inputCtrl.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((value: string | null) => {
+      .subscribe((value: any) => {
         this.inputVal.set(value ?? '');
       });
   }

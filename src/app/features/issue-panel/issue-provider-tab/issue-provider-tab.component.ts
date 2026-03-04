@@ -96,10 +96,10 @@ export class IssueProviderTabComponent implements OnDestroy, AfterViewInit {
   private _store = inject(Store);
 
   issueProvider = input.required<IssueProvider>();
-  issueProvider$ = toObservable(this.issueProvider);
+  issueProvider$: Observable<IssueProvider> = toObservable(this.issueProvider);
 
   searchText = signal('');
-  searchTxt$ = toObservable(this.searchText);
+  searchTxt$: Observable<string> = toObservable(this.searchText);
 
   issueProviderTooltip = computed(() => getIssueProviderTooltip(this.issueProvider()));
   issueProviderHelpLink = computed(() =>
@@ -130,7 +130,7 @@ export class IssueProviderTabComponent implements OnDestroy, AfterViewInit {
   issueItems$: Observable<{ added: SearchResultItem[]; notAdded: SearchResultItem[] }> =
     this.searchTxt$.pipe(
       debounce(() => timer(400)),
-      switchMap((searchText) => {
+      switchMap((searchText: string) => {
         if (searchText.length < this.SEARCH_MIN_LENGTH) {
           this.isLoading.set(false);
           return of({ added: [], notAdded: [] });
@@ -170,7 +170,7 @@ export class IssueProviderTabComponent implements OnDestroy, AfterViewInit {
             ),
           ),
 
-          switchMap((items) =>
+          switchMap((items: SearchResultItem[]) =>
             this._store
               .select(selectAllTaskIssueIdsForIssueProvider(this.issueProvider()))
               .pipe(

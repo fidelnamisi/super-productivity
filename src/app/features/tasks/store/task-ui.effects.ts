@@ -157,7 +157,7 @@ export class TaskUiEffects {
           globalCfg && globalCfg.timeTracking.isNotifyWhenTimeEstimateExceeded
             ? this._bannerService.activeBanner$.pipe(
                 switchMap((activeBanner) =>
-                  activeBanner?.id === BannerId.TimeEstimateExceeded
+                  (activeBanner as any)?.id === BannerId.TimeEstimateExceeded
                     ? this._store$.pipe(
                         select(selectCurrentTaskId),
                         // currentTaskId is local UI state (not synced), so distinctUntilChanged is sufficient

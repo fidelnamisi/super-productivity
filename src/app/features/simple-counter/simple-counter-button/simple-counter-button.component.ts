@@ -14,7 +14,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogSimpleCounterEditComponent } from '../dialog-simple-counter-edit/dialog-simple-counter-edit.component';
 import { T } from 'src/app/t.const';
 import { GlobalTrackingIntervalService } from '../../../core/global-tracking-interval/global-tracking-interval.service';
-import { merge, of, Subject, Subscription } from 'rxjs';
+import { Tick } from '../../../core/global-tracking-interval/tick.model';
+import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { DateService } from 'src/app/core/date/date.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, filter, map, scan, switchMap } from 'rxjs/operators';
@@ -71,17 +72,17 @@ export class SimpleCounterButtonComponent implements OnDestroy, OnInit {
   private _subs = new Subscription();
   private _resetCountdown$ = new Subject();
   private _countdownDuration$ = toObservable(this.simpleCounter).pipe(
-    map((c) => c?.countdownDuration),
+    map((c: SimpleCounter) => c?.countdownDuration),
     filter((v): v is number => typeof v === 'number' && v > 0),
     distinctUntilChanged(),
   );
 
-  countdownTime$ = this._countdownDuration$.pipe(
-    switchMap((countdownDuration) =>
+  countdownTime$: Observable<number> = this._countdownDuration$.pipe(
+    switchMap((countdownDuration: number) =>
       merge(of(true), this._resetCountdown$).pipe(
         switchMap(() =>
           this._globalTrackingIntervalService.tick$.pipe(
-            scan((acc, tick) => {
+            scan((acc: number, tick: Tick) => {
               if (!this.simpleCounter()?.isOn) {
                 return acc;
               }

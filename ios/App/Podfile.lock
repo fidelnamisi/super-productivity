@@ -17,7 +17,7 @@ PODS:
     - Capacitor
   - CapawesomeCapacitorBackgroundTask (7.0.1):
     - Capacitor
-  - IONFilesystemLib (1.0.1)
+  - IONFilesystemLib (1.1.1)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -64,8 +64,8 @@ SPEC CHECKSUMS:
   CapacitorShare: be166411fa995ead2d39b104aa0aae56d8615c66
   CapacitorStatusBar: d0e0151c89c001a9c7125bac59ddedf76b664768
   CapawesomeCapacitorBackgroundTask: e17ea2608e9bdd14889d8eba2d793ff9c337db6c
-  IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
+  IONFilesystemLib: dfa8706539ac9ab77ccfd6e5b3830ce9b5e57f6c
 
-PODFILE CHECKSUM: 5e105da70a830637dfec7bc2882a9f81f60216b6
+PODFILE CHECKSUM: 83d05dfb9122ce6eca8bd347ce852a3d671b9dc6
 
 COCOAPODS: 1.16.2

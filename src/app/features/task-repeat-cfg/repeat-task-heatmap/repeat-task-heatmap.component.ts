@@ -37,8 +37,10 @@ export class RepeatTaskHeatmapComponent {
   private readonly _rawHeatmapData = toSignal(
     toObservable(this.repeatCfgId).pipe(
       filter((id): id is string => !!id),
-      switchMap((repeatCfgId) => from(this._loadTasksForRepeatCfg(repeatCfgId))),
-      map((tasks) => this._buildHeatmapData(tasks)),
+      switchMap((repeatCfgId) =>
+        from(this._loadTasksForRepeatCfg(repeatCfgId as string)),
+      ),
+      map((tasks: Task[]) => this._buildHeatmapData(tasks)),
     ),
     { initialValue: null },
   );

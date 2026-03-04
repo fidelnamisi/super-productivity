@@ -74,7 +74,7 @@ export class DialogFullscreenMarkdownComponent implements AfterViewInit {
     // Auto-save with debounce
     this._contentChanges$
       .pipe(debounceTime(500), takeUntilDestroyed(this._destroyRef))
-      .subscribe((value) => {
+      .subscribe((value: any) => {
         this.contentChanged.emit(value);
       });
 
@@ -83,7 +83,7 @@ export class DialogFullscreenMarkdownComponent implements AfterViewInit {
     this._matDialogRef
       .keydownEvents()
       .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((e) => {
+      .subscribe((e: any) => {
         if (e.key === 'Escape') {
           e.preventDefault();
           this.close();

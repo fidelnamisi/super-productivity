@@ -1,6 +1,6 @@
 require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
 
-platform :ios, '14.0'
+platform :ios, '16.0'
 use_frameworks!
 
 # workaround to avoid Xcode caching of Pods that requires
@@ -27,4 +27,23 @@ end
 
 post_install do |installer|
   assertDeploymentTarget(installer)
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+    config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+    config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+    config.build_settings['ALWAYS_SEARCH_USER_PATHS'] = 'NO'
+  end
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+      config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+      config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+      
+      # Fix for CapacitorCordova module build issues
+      if target.name == 'CapacitorCordova'
+        config.build_settings['HEADER_SEARCH_PATHS'] = '$(inherited) "${PODS_TARGET_SRCROOT}/CapacitorCordova/CapacitorCordova/Classes/Public"'
+      end
+    end
+  end
 end

@@ -7,7 +7,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { timer } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs/operators';
 import { T } from '../../../t.const';
@@ -46,20 +46,23 @@ export class FocusModeCountdownComponent implements OnInit {
     this.countdownValue.set(this.COUNTDOWN_DURATION);
     this.rocketState.set('pulse-5');
 
-    timer(0, 1000)
-      .pipe(takeUntilDestroyed(this._destroyRef), take(this.COUNTDOWN_DURATION + 1))
-      .subscribe((tick) => {
-        const remaining = this.COUNTDOWN_DURATION - tick;
-        this.countdownValue.set(remaining);
+    (
+      timer(0, 1000).pipe(
+        takeUntilDestroyed(this._destroyRef),
+        take(this.COUNTDOWN_DURATION + 1),
+      ) as Observable<number>
+    ).subscribe((tick: number) => {
+      const remaining = this.COUNTDOWN_DURATION - tick;
+      this.countdownValue.set(remaining);
 
-        if (remaining > 0) {
-          this.rocketState.set(`pulse-${remaining}` as RocketState);
-        } else {
-          this.rocketState.set('launch');
-          window.setTimeout(() => {
-            this.countdownComplete.emit();
-          }, 900);
-        }
-      });
+      if (remaining > 0) {
+        this.rocketState.set(`pulse-${remaining}` as RocketState);
+      } else {
+        this.rocketState.set('launch');
+        window.setTimeout(() => {
+          this.countdownComplete.emit();
+        }, 900);
+      }
+    });
   }
 }

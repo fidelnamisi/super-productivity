@@ -69,6 +69,7 @@ import { MobileBottomNavComponent } from './core-ui/mobile-bottom-nav/mobile-bot
 import { StartupService } from './core/startup/startup.service';
 import { KeyboardLayoutService } from './core/keyboard-layout/keyboard-layout.service';
 import { setKeyboardLayoutService } from './util/check-key-combo';
+import { WidgetSyncService } from './core/widget/widget-sync.service';
 
 const w = window as Window & { productivityTips?: string[][]; randomIndex?: number };
 const productivityTip: string[] | undefined =
@@ -140,6 +141,7 @@ export class AppComponent implements OnDestroy, AfterViewInit {
   readonly globalThemeService = inject(GlobalThemeService);
   readonly shepherdService = inject(ShepherdService);
   readonly _store = inject(Store);
+  readonly _widgetSyncService = inject(WidgetSyncService);
   readonly T = T;
   readonly isShowMobileButtonNav = this.layoutService.isShowMobileBottomNav;
 
@@ -240,6 +242,8 @@ export class AppComponent implements OnDestroy, AfterViewInit {
     } else {
       setTimeout(() => this._keyboardLayoutService.saveUserLayout(), 0);
     }
+
+    this._widgetSyncService.init();
   }
 
   skipInitialSync(): void {

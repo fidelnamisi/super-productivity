@@ -36,7 +36,7 @@ export class BannerComponent {
   private _dirtyReference?: string | null;
   // TODO maybe improve if initial delay is annoying
   activeBanner$: Observable<Banner | null> = this.bannerService.activeBanner$.pipe(
-    concatMap((activeBanner) => {
+    concatMap((activeBanner: Banner | null) => {
       if (activeBanner) {
         if (!this._dirtyReference || this._dirtyReference === activeBanner.id) {
           this._dirtyReference = activeBanner.id;

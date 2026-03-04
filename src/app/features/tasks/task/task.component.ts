@@ -265,8 +265,10 @@ export class TaskComponent implements OnDestroy, AfterViewInit {
 
   parentTask = toSignal(
     this._task$.pipe(
-      switchMap((task) =>
-        task.parentId ? this._taskService.getByIdLive$(task.parentId) : of(null),
+      switchMap((task: TaskWithSubTasks) =>
+        task.parentId
+          ? this._taskService.getByIdLive$(task.parentId as string)
+          : of(null),
       ),
     ),
   );

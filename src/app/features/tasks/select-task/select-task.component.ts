@@ -81,15 +81,16 @@ export class SelectTaskComponent {
       toObservable(this.isLimitToProject),
       toObservable(this.isIncludeDoneTasks),
     ]).pipe(
-      switchMap(([isLimitToProject, isIncludeDoneTasks]) =>
-        isLimitToProject
+      switchMap((args: any) => {
+        const [isLimitToProject, isIncludeDoneTasks] = args;
+        return isLimitToProject
           ? isIncludeDoneTasks
             ? this._workContextService.trackableTasksForActiveContext$
             : this._workContextService.startableTasksForActiveContext$
           : isIncludeDoneTasks
             ? this._store.select(selectTrackableTasksActiveContextFirst)
-            : this._store.select(selectStartableTasksActiveContextFirst),
-      ),
+            : this._store.select(selectStartableTasksActiveContextFirst);
+      }),
     ),
     { initialValue: [] as Task[] },
   );

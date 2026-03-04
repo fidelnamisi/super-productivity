@@ -175,7 +175,8 @@ export class AddTaskBarComponent implements AfterViewInit, OnInit, OnDestroy {
     this._workContextService.activeWorkContext$,
     this._globalConfigService.tasks$,
   ]).pipe(
-    map(([projects, workContext, tasksConfig]) => {
+    map((args: any) => {
+      const [projects, workContext, tasksConfig] = args;
       // Priority order:
       // 1. If current work context is a project → use that project
       // 2. If tasks.defaultProjectId is configured → use that project
@@ -314,7 +315,7 @@ export class AddTaskBarComponent implements AfterViewInit, OnInit, OnDestroy {
   private _setProjectInitially(): void {
     this.defaultProject$
       .pipe(first(), takeUntilDestroyed(this._destroyRef))
-      .subscribe((defaultProject) => {
+      .subscribe((defaultProject: any) => {
         if (defaultProject) {
           this.stateService.updateProjectId(defaultProject.id);
         }
@@ -328,7 +329,7 @@ export class AddTaskBarComponent implements AfterViewInit, OnInit, OnDestroy {
 
     this._workContextService.activeWorkContext$
       .pipe(first(), takeUntilDestroyed(this._destroyRef))
-      .subscribe((workContext) => {
+      .subscribe((workContext: any) => {
         if (
           workContext?.type === WorkContextType.TAG &&
           workContext.id !== TODAY_TAG.id
@@ -341,7 +342,8 @@ export class AddTaskBarComponent implements AfterViewInit, OnInit, OnDestroy {
   private _setupDefaultDate(): void {
     this.defaultDateAndTime$
       .pipe(first(), takeUntilDestroyed(this._destroyRef))
-      .subscribe(({ date, time }) => {
+      .subscribe((val: any) => {
+        const { date, time } = val;
         if (date) {
           this.stateService.updateDate(date, time);
         }
@@ -358,22 +360,22 @@ export class AddTaskBarComponent implements AfterViewInit, OnInit, OnDestroy {
       this.defaultDateAndTime$,
     ])
       .pipe(
-        switchMap(
-          ([title, config, allTags, allProjects, defaultProject, defaultDateInfo]) => {
-            const { date, time } = defaultDateInfo;
-            return from(
-              this._parserService.parseAndUpdateText(
-                title || '',
-                config,
-                allProjects,
-                allTags,
-                defaultProject!,
-                date,
-                time,
-              ),
-            );
-          },
-        ),
+        switchMap((args: any) => {
+          const [title, config, allTags, allProjects, defaultProject, defaultDateInfo] =
+            args;
+          const { date, time } = defaultDateInfo as any;
+          return from(
+            this._parserService.parseAndUpdateText(
+              title || '',
+              config as any,
+              allProjects as any,
+              allTags,
+              defaultProject!,
+              date,
+              time,
+            ),
+          );
+        }),
         takeUntilDestroyed(this._destroyRef),
       )
       .subscribe();
@@ -390,7 +392,7 @@ export class AddTaskBarComponent implements AfterViewInit, OnInit, OnDestroy {
     this.suggestions$
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((suggestions) => {
-        if (suggestions && suggestions.length > 0) {
+        if (suggestions && (suggestions as any).length > 0) {
           this.onTaskSuggestionActivated(suggestions[0]);
         } else {
           this.onTaskSuggestionActivated(null);

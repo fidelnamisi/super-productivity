@@ -3,6 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { GlobalConfigSectionKey, SoundConfig } from '../global-config.model';
 import { ProjectCfgFormKey } from '../../project/project.model';
 import { exists } from 'src/app/util/exists';
+import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SOUND_OPTS } from '../form-cfgs/sound-form.const';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -68,19 +69,23 @@ export class ConfigSoundFormComponent {
   private isInitializing = true;
 
   constructor() {
-    this.soundForm.valueChanges
-      .pipe(takeUntilDestroyed(), debounceTime(300), distinctUntilChanged())
-      .subscribe((data) => {
-        if (!this.isInitializing) {
-          this.updateCfg({
-            volume: data.volume ?? 0,
-            doneSound: data.doneSound ?? null,
-            breakReminderSound: data.breakReminderSound ?? null,
-            trackTimeSound: data.trackTimeSound ?? null,
-            isIncreaseDoneSoundPitch: data.isIncreaseDoneSoundPitch ?? false,
-          });
-        }
-      });
+    (
+      this.soundForm.valueChanges.pipe(
+        takeUntilDestroyed(),
+        debounceTime(300),
+        distinctUntilChanged(),
+      ) as unknown as Observable<Partial<SoundConfig>>
+    ).subscribe((data) => {
+      if (!this.isInitializing) {
+        this.updateCfg({
+          volume: data.volume ?? 0,
+          doneSound: data.doneSound ?? null,
+          breakReminderSound: data.breakReminderSound ?? null,
+          trackTimeSound: data.trackTimeSound ?? null,
+          isIncreaseDoneSoundPitch: data.isIncreaseDoneSoundPitch ?? false,
+        });
+      }
+    });
 
     this.isInitializing = false;
   }

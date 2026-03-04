@@ -159,10 +159,12 @@ export class TaskDetailPanelComponent implements OnInit, AfterViewInit, OnDestro
   // Parent task data
   parentTaskData = toSignal(
     this._task$.pipe(
-      map((task) => task.parentId),
+      map((task: TaskWithSubTasks) => task.parentId),
       distinctUntilChanged(),
       switchMap((parentId) =>
-        parentId ? this.taskService.getByIdWithSubTaskData$(parentId) : of(null),
+        parentId
+          ? this.taskService.getByIdWithSubTaskData$(parentId as string)
+          : of(null),
       ),
     ),
     { initialValue: null },
@@ -170,11 +172,13 @@ export class TaskDetailPanelComponent implements OnInit, AfterViewInit, OnDestro
 
   // Repeat config label
   private _repeatCfg$ = this._task$.pipe(
-    map((task) => task.repeatCfgId),
+    map((task: TaskWithSubTasks) => task.repeatCfgId),
     distinctUntilChanged(),
     switchMap((repeatCfgId) =>
       repeatCfgId
-        ? this._taskRepeatCfgService.getTaskRepeatCfgByIdAllowUndefined$(repeatCfgId)
+        ? this._taskRepeatCfgService.getTaskRepeatCfgByIdAllowUndefined$(
+            repeatCfgId as string,
+          )
         : of(null),
     ),
   );
@@ -186,7 +190,7 @@ export class TaskDetailPanelComponent implements OnInit, AfterViewInit, OnDestro
           return null;
         }
         const [key, params] = getTaskRepeatInfoText(
-          repeatCfg,
+          repeatCfg as any,
           this._dateTimeFormatService.currentLocale,
           this._dateTimeFormatService,
         );
@@ -200,12 +204,12 @@ export class TaskDetailPanelComponent implements OnInit, AfterViewInit, OnDestro
   private _issueData$ = this._task$.pipe(
     takeUntilDestroyed(this._destroyRef),
     // Only react to changes in issue-related properties
-    map((task) => ({
+    map((task: TaskWithSubTasks) => ({
       issueId: task.issueId,
       issueType: task.issueType,
       issueProviderId: task.issueProviderId,
     })),
-    distinctUntilChanged((prev, curr) => prev.issueId === curr.issueId),
+    distinctUntilChanged((prev: any, curr: any) => prev.issueId === curr.issueId),
     switchMap(({ issueId, issueType, issueProviderId }) => {
       if (!issueId || !issueType || !issueProviderId) {
         return of(null);
@@ -329,12 +333,12 @@ export class TaskDetailPanelComponent implements OnInit, AfterViewInit, OnDestro
   private _jiraImageHeaders = IS_ELECTRON
     ? this._task$
         .pipe(
-          map((task) => ({
+          map((task: TaskWithSubTasks) => ({
             issueType: task.issueType,
             issueProviderId: task.issueProviderId,
           })),
           distinctUntilChanged(
-            (prev, curr) =>
+            (prev: any, curr: any) =>
               prev.issueType === curr.issueType &&
               prev.issueProviderId === curr.issueProviderId,
           ),
@@ -345,7 +349,10 @@ export class TaskDetailPanelComponent implements OnInit, AfterViewInit, OnDestro
           switchMap((issueProviderId) =>
             issueProviderId
               ? this._store.select(
-                  selectIssueProviderById<IssueProviderJira>(issueProviderId, 'JIRA'),
+                  selectIssueProviderById<IssueProviderJira>(
+                    issueProviderId as string,
+                    'JIRA',
+                  ),
                 )
               : of(null),
           ),
@@ -360,7 +367,7 @@ export class TaskDetailPanelComponent implements OnInit, AfterViewInit, OnDestro
 
   private _focusOnTaskIdChange = this._task$
     .pipe(
-      map((task) => task.id),
+      map((task: TaskWithSubTasks) => task.id),
       distinctUntilChanged(),
       skip(1), // Skip initial emission
       takeUntilDestroyed(this._destroyRef),

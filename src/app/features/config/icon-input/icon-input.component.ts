@@ -20,6 +20,7 @@ import { containsEmoji, extractFirstEmoji } from '../../../util/extract-first-em
 import { isSingleEmoji } from '../../../util/extract-first-emoji';
 import { startWith } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'icon-input',
@@ -54,11 +55,14 @@ export class IconInputComponent extends FieldType<FormlyFieldConfig> implements 
   }
 
   ngOnInit(): void {
-    this.formControl.valueChanges
-      .pipe(startWith(this.formControl.value), takeUntilDestroyed(this._destroyRef))
-      .subscribe((val: string | null) => {
-        this.isEmoji.set(containsEmoji(val || ''));
-      });
+    (
+      this.formControl.valueChanges.pipe(
+        startWith(this.formControl.value),
+        takeUntilDestroyed(this._destroyRef),
+      ) as Observable<string | null>
+    ).subscribe((val: string | null) => {
+      this.isEmoji.set(containsEmoji(val || ''));
+    });
   }
 
   trackByIndex(i: number, p: any): number {

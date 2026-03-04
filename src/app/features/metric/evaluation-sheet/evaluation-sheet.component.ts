@@ -60,8 +60,11 @@ export class EvaluationSheetComponent {
   readonly T = T;
   // Internal signals
 
-  private readonly _resolvedDay$ = toObservable(this.dayStr$).pipe(
-    switchMap((custom$) => custom$ ?? this._globalTrackingIntervalService.todayDateStr$),
+  private readonly _resolvedDay$: Observable<string> = toObservable(this.dayStr$).pipe(
+    switchMap(
+      (custom$: Observable<string> | null) =>
+        custom$ ?? this._globalTrackingIntervalService.todayDateStr$,
+    ),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
   private readonly _day$ = this._resolvedDay$;
@@ -71,20 +74,24 @@ export class EvaluationSheetComponent {
 
   // Metric data for the selected day
   readonly metricForDay = toSignal<MetricCopy | undefined>(
-    this._day$.pipe(switchMap((day) => this._metricService.getMetricForDay$(day))),
+    this._day$.pipe(
+      switchMap((day: string) => this._metricService.getMetricForDay$(day)),
+    ),
     { initialValue: undefined },
   );
 
   // Productivity summary (average + trend)
   private readonly _productivityAverage = toSignal(
     this._day$.pipe(
-      switchMap((day) => this._metricService.getAverageProductivityScore$(7, day)),
+      switchMap((day: string) =>
+        this._metricService.getAverageProductivityScore$(7, day),
+      ),
     ),
     { initialValue: null },
   );
   private readonly _productivityTrend = toSignal(
     this._day$.pipe(
-      switchMap((day) => this._metricService.getProductivityTrend$(7, day)),
+      switchMap((day: string) => this._metricService.getProductivityTrend$(7, day)),
     ),
     { initialValue: null },
   );
@@ -96,13 +103,15 @@ export class EvaluationSheetComponent {
   // Sustainability summary (average + trend)
   private readonly _sustainabilityAverage = toSignal(
     this._day$.pipe(
-      switchMap((day) => this._metricService.getAverageSustainabilityScore$(7, day)),
+      switchMap((day: string) =>
+        this._metricService.getAverageSustainabilityScore$(7, day),
+      ),
     ),
     { initialValue: null },
   );
   private readonly _sustainabilityTrend = toSignal(
     this._day$.pipe(
-      switchMap((day) => this._metricService.getSustainabilityTrend$(7, day)),
+      switchMap((day: string) => this._metricService.getSustainabilityTrend$(7, day)),
     ),
     { initialValue: null },
   );

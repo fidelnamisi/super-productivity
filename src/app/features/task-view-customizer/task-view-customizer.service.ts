@@ -87,7 +87,7 @@ export class TaskViewCustomizerService {
       this.store
         .select(selectAllProjects)
         .pipe(takeUntilDestroyed())
-        .subscribe((projects) => {
+        .subscribe((projects: any) => {
           this._allProjects = projects;
         });
       this._projectsLoaded = true;
@@ -99,7 +99,7 @@ export class TaskViewCustomizerService {
       this.store
         .select(selectAllTags)
         .pipe(takeUntilDestroyed())
-        .subscribe((tags) => {
+        .subscribe((tags: any) => {
           this._allTags = tags;
         });
       this._tagsLoaded = true;
@@ -116,7 +116,11 @@ export class TaskViewCustomizerService {
       toObservable(this.selectedFilter),
     ]).pipe(
       observeOn(animationFrameScheduler),
-      map(([undone, sort, group, filter]) => {
+      map((args: any) => {
+        const undone: TaskWithSubTasks[] = args[0];
+        const sort: SortOption = args[1];
+        const group: GroupOption = args[2];
+        const filter: FilterOption = args[3];
         const normalizedFilterVal =
           typeof filter.preset === 'string' ? filter.preset.trim() : filter.preset;
         const filterValueToUse =
@@ -135,9 +139,9 @@ export class TaskViewCustomizerService {
           : this.applyFilter(undone, filter.type, filterValueToUse);
         const sorted = isDefaultSort
           ? filtered
-          : this.applySort(filtered, sort.type, sort.order);
+          : this.applySort(filtered, sort!.type, sort!.order);
         const grouped = !isDefaultGroup
-          ? this.applyGrouping(sorted, group.type)
+          ? this.applyGrouping(sorted, group!.type)
           : undefined;
 
         return { list: sorted, grouped };

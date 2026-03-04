@@ -33,9 +33,9 @@ export class GlobalProgressBarService {
   private _label = signal<GlobalProgressBarLabel | null>(null);
 
   // Expose as observables for backward compatibility
-  nrOfRequests$ = toObservable(this._nrOfRequests);
+  nrOfRequests$: Observable<number> = toObservable(this._nrOfRequests);
   isShowGlobalProgressBar$: Observable<boolean> = this.nrOfRequests$.pipe(
-    map((nr) => nr > 0),
+    map((nr: number) => nr > 0),
     distinctUntilChanged(),
     switchMap((isShow) => (isShow ? of(true) : of(false).pipe(delay(DELAY)))),
     startWith(false),
@@ -59,7 +59,10 @@ export class GlobalProgressBarService {
   );
 
   label$: Observable<GlobalProgressBarLabel | null> = toObservable(this._label).pipe(
-    distinctUntilChanged((prev, curr) => this._areLabelsEqual(prev, curr)),
+    distinctUntilChanged(
+      (prev: GlobalProgressBarLabel | null, curr: GlobalProgressBarLabel | null) =>
+        this._areLabelsEqual(prev, curr),
+    ),
     switchMap((label: GlobalProgressBarLabel | null) =>
       label ? of(label) : of(null).pipe(delay(DELAY)),
     ),
